@@ -1,0 +1,13 @@
+{
+	"name": "whamess-bot",
+	"type": "module",
+	"scripts": {
+		"start": "node index.js"
+	},
+	"dependencies": {
+		"express": "^4.17.1",
+		"mysql2": "^2.2.5",
+		"venom": "^0.1.0",
+		"venom-bot": "^2.2.3"
+	}
+}
