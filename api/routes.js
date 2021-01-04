@@ -1,12 +1,13 @@
 import bodyParser from 'body-parser'
 import { sendMessage } from "./sender.js";
 import creator from './creator.js'
-import { createSession, getSession } from '../db/db.js';
+import { createSession, getSession, setStateSession } from '../db/db.js';
 
 let sessionData = []
 
 function setClients(clients) {
   sessionData = clients
+  return sessionData
 }
 
 function routes(app) {  
@@ -32,6 +33,14 @@ function routes(app) {
     res.json({ res: req.params['name'] })
   })
 
+  app.get("/info", async (req, res) => {
+    //console.log(req.body);
+
+    //console.log();
+    return  res.json(await setStateSession(req.body.name, req.body.status)) 
+  
+    //return res.json(await getSession(req.body.name)) 
+  })
 }
 
 

@@ -3,26 +3,45 @@ import express from "express";
 import bodyParser from "body-parser";
 import { routes, setClients } from "./api/routes.js";
 import creator from "./api/creator.js";
-import { connect, getSession } from "./db/db.js";
+import { connect, getSession, getSessionNames, setStateSession } from "./db/db.js";
 import { sendMessage } from "./api/sender.js";
+
+
+
+const app = express();
+const { Whatsapp } = bot
+let clients = [];
+
+app.listen(3000, () => {
+  console.log("api started");
+});
+app.use(bodyParser.json());
 
 connect();
 
-const app = express();
-let clients = [];
+getSessionNames().then((users) => {
+  users.map(async (user) => {
+    let sessionName = user.cst_name
 
-app.use(bodyParser.json());
-
-app.listen(3000, () => {
-  console.log("connected");
+      bot
+      .create(
+        sessionName,
+        undefined,
+        async (statusSession, session) => {
+          // return: isLogged || notLogged || browserClose || qrReadSuccess || qrReadFail || autocloseCalled || desconnectedMobile || deleteToken
+          if (statusSession !== 'inChat' && statusSession !== 'isLogged' ) {
+            await setStateSession(sessionName, 0)
+          } else { 
+            await setStateSession(sessionName, 1)
+          }
+        },
+        undefined
+      )
+      .then((client) => start(client))
+      .catch((error) => console.log(error));
+  });
 });
 
-bot.create("teste").then(async (client) => {
-  start(client);
-  clients.teste = client;
-  //var response = await getSession(1)
-  //console.log(response[0][0].ses_data)
-});
 
 function start(client) {
   client.onMessage((message) => {
